@@ -1,0 +1,78 @@
+
+INPUT FILES 
+
+'INdyn'		parameters for propagation and initial wavefunction: 
+	width, deviation from starting geometry defined in 'INxyz', momenta, mass
+
+'INxyz'		parameters for model potentials + 5 parameters  relevant for any dynamics + starting geometry 
+Esh == overall shift of the potential if doing  DFTB
+ch  == bond distance for atoms 1&2
+bnd == deviation of the bond distance  from ch when atom1 is considered bonded to atom2 for probability caclulation
+qmn,qmx == range of z-coordinates of atom 1 outside of which a QT will  be ingored, i.e. its weight =0 in trot
+
+'IN_dftb'	specifies parameters for DFTB 	
+2         ! ntype, number of atom types
+2 1       ! lmax(iat): 1 ... ntype, this number is the max number of orbitals needed for different atoms,
+ C is atom 1 and H is atom 2 here, *.spl files are in order according to this atom number 
+'cc.spl', 'ch-g2ms.spl', 'hc-g2ms.spl', 'hh.spl'
+NOTE Electronic temperature  is defined in derivs()
+
+dftb patameters are echoed in 'out.dftb'
+
+
+OUTPUT FILES 
+
+MPI related: 
+
+ 21 'trajt'	timing for initialize/read trajectories 
+
+ 22 'dftbt'	timing for derivs() with dftb 
+
+QT related:
+
+nqd==number of QDOF; np== number of trajectories (QTs); 
+
+ 10 'traj' a representative trajectory (#2 if exists)
+		time, [coordinates of trajectory #2 up to nqd*4], action function s(2)
+
+ 11 'aver' some average quantities
+	 	time, norm an, probability as defined in aver(), average position <x> up to 40 DOFs
+
+ 12 'qt.dat'  saves all QT info for post-processing as two lines  for each large time-step
+	 	time, all positions of QTs (x(*,n),n=1,nd), w(*) \\	
+ 		time, all momenta of QTs (p(*,n),n=1,nd), s(*) 
+
+ 13 'cor'	a correlation function;  which is an autocorrelation function if psi(x,0) is real
+
+ 14 'pfit'    the r-fitting coefficients b as a function of time (LQF n1=2  currently) for QDOFs
+	 	time,((b(j,i),j=1,n1),i=1,nqd)
+
+ 15 'qtx'	x-position of the first quantum particle for up to 20 QTs 
+		time, (x(1,j),j=1,min(20,np))
+ 16 'qty'	y-position of the first quantum particle for up to 20 QTs 
+		time, (x(2,j),j=1,min(20,np))
+ 17 'qtz'	z-position of the first quantum particle for up to 20 QTs 
+		time, (x(3,j),j=1,min(20,np))
+
+ 19 'ener' 	average energy components: total, <QP>, <V>,  enq/enc is <K> for QDOFs/CDOFs
+		time, ,en,qp,vav,enq,enc
+		
+
+ 25 'clx'	x-position of the first classical particle for up to 20 QTs
+		time, (x(nqd+1,j),j=1,min(20,np))
+ 26 'cly'	y-position of the first classical particle for up to 20 QTs
+		time, (x(nqd+2,j),j=1,min(20,np))
+ 27 'clz'	z-position of the first classical particle for up to 20 QTs
+		time, (x(nqd+3,j),j=1,min(20,np))
+
+ 28 'wf0'	initial positions of all trajectories upto 40 dimensions
+		(x(i,k),k=1,40),i=1,np)
+ 29 'wft'	final positions of all trajectories upto 40 dimensions
+		(x(i,k),k=1,40),i=1,np)
+
+ 32 'traj.sav'  saves current QT info for reading instead of initializing  on rerun
+	 	time\\
+		 all positions of QTs (x(*,n),n=1,nd), w(*) \\	
+ 		 all momenta of QTs (p(*,n),n=1,nd), s(*) 
+
+ 1000+myid 	trace file for processor=myid
