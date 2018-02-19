@@ -1,0 +1,7 @@
+2         ! ntype, number of atom types
+2 1       ! lmax(iat): 1 ... ntype, this number is the max number of orbitals needed for different atoms, C is atom 1 and H is atom 2 here, *.spl files are in order according to this atom number
+'cc.spl'
+'ch-g2ms.spl'
+'hc-g2ms.spl'
+'hh.spl'
+
